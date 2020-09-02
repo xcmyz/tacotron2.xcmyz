@@ -1,8 +1,2 @@
-# ConvSpeech
-Experiment. (New Architecture: ConvAttenBlock)
-
-## Architecture
-Encoder是DurIAN结构，Decoder是卷积结构。position encoding作为decoder的输入。
-
-## Abstract
-Recently, text-to-speech (TTS) models such as FastSpeech, FastSpeech 2 and ParaNet have been proposed to generate mel spectrograms from text in parallel. Despite the advantages, the non-autoregressive TTS models such as FastSpeech have much more parameter and need higher computational cost in inference than autoregressive models such as Tacotron2 and DurIAN. In addition, the quality of audio synthesized by non-autoregressive models is not as well as the audio synthesized by autoregressive models. In this work, we propose ConvSpeech, a conv-based generative model for non-autoregressive TTS model that can synthesize high quality audio in low computational cost. We combine several conv layers proposed in DeepVoice3 with multi-head attention layer as one convblock which output was passed by a linear projection to synthesize mel spectrograms. ConvSpeech decoder are the bank of convblocks. Experiments on LJSpeech shows that our model can synthesize better quality audio by setting targets in a layer-by-layer manner and total number of our model’s parameters is just 10M which is almost 1/3 of FastSpeech. Furthermore, our model can synthesize r frames of mel spectrogram at once so it don’t need to consume huge memory like FastSpeech in inference.
+# Tacotron2
+new version.
