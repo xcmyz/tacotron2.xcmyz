@@ -6,16 +6,11 @@ class DNNLoss(nn.Module):
     def __init__(self):
         super(DNNLoss, self).__init__()
         self.mse_loss = nn.MSELoss()
-        self.l1_loss = nn.L1Loss()
+        self.gate_loss = nn.BCEWithLogitsLoss()
 
-    def forward(self, mel_outputs, duration_predicted, mel_target, duration_predictor_target):
-        mel_losses = list()
-        mel_target.requires_grad = False
-        for mel_output in mel_outputs:
-            mel_losses.append(self.mse_loss(mel_output, mel_target))
+    def forward(self, mel_output, mel_output_postnet, gate_output, mel_target, gate_target):
+        mel_loss = self.mse_loss(mel_output, mel_target)
+        mel_postnet_loss = self.mse_loss(mel_output_postnet, mel_target)
+        gate_loss = self.gate_loss(gate_output, gate_target)
 
-        duration_predictor_target.requires_grad = False
-        duration_predictor_loss = self.l1_loss(duration_predicted,
-                                               duration_predictor_target.float())
-
-        return mel_losses, duration_predictor_loss
+        return mel_loss, mel_postnet_loss, gate_loss
