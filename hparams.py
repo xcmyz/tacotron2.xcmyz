@@ -59,13 +59,14 @@ postnet_n_convolutions = 5
 mask_padding = True
 fp16_run = False
 
+
 # Train
 checkpoint_path = "./model_new"
 logger_path = "./logger"
 mel_ground_truth = "./mels"
 alignment_path = "./alignments"
 
-batch_size = 32
+batch_size = 2
 epochs = 2000
 n_warm_up_step = 4000
 

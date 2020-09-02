@@ -96,34 +96,38 @@ def main(args):
                 mel_pos = db["mel_pos"].long().to(device)
                 src_pos = db["src_pos"].long().to(device)
                 max_mel_len = db["mel_max_len"]
+                gate_target = mel_pos.eq(0).float()
+                mel_target = mel_target.contiguous().transpose(1, 2)
+                src_length = torch.max(src_pos, -1)[0]
+                mel_length = torch.max(mel_pos, -1)[0]
 
                 # Forward
-                mel_outputs, duration_predictor_output = model(character,
-                                                               src_pos,
-                                                               mel_view_pos=mel_view_pos,
-                                                               mel_pos=mel_pos,
-                                                               mel_max_length=max_mel_len,
-                                                               length_target=duration)
+                inputs = character, src_length, mel_target, max_mel_len, mel_length
+                mel_output, mel_output_postnet, gate_output, _ = model(inputs)
 
                 # Cal Loss
-                mel_losses, duration_loss = tts_loss(mel_outputs,
-                                                     duration_predictor_output,
-                                                     mel_target,
-                                                     duration)
-
-                total_loss = duration_loss
-                for m_l in mel_losses:
-                    total_loss = total_loss + m_l
+                mel_loss, mel_postnet_loss, gate_loss = tts_loss(
+                    mel_output, mel_output_postnet, gate_output,
+                    mel_target, gate_target)
+                total_loss = mel_loss + mel_postnet_loss + gate_loss
 
                 # Logger
                 t_l = total_loss.item()
-                d_l = duration_loss.item()
+                m_l = mel_loss.item()
+                m_p_l = mel_postnet_loss.item()
+                g_l = gate_loss.item()
 
                 with open(os.path.join("logger", "total_loss.txt"), "a") as f_total_loss:
                     f_total_loss.write(str(t_l)+"\n")
 
-                with open(os.path.join("logger", "duration_loss.txt"), "a") as f_d_loss:
-                    f_d_loss.write(str(d_l)+"\n")
+                with open(os.path.join("logger", "mel_loss.txt"), "a") as f_mel_loss:
+                    f_mel_loss.write(str(m_l)+"\n")
+
+                with open(os.path.join("logger", "mel_postnet_loss.txt"), "a") as f_mel_postnet_loss:
+                    f_mel_postnet_loss.write(str(m_p_l)+"\n")
+
+                with open(os.path.join("logger", "gate_loss.txt"), "a") as f_g_loss:
+                    f_g_loss.write(str(g_l)+"\n")
 
                 # Backward
                 total_loss.backward()
@@ -145,11 +149,8 @@ def main(args):
 
                     str1 = "Epoch [{}/{}], Step [{}/{}]:"\
                         .format(epoch + 1, hp.epochs, current_step, total_step)
-                    str2 = ""
-                    for m_l in mel_losses:
-                        str2 += " {:.4f}".format(m_l)
-                    str2 = "Mel Loss:" + str2 + \
-                        ", Duration Loss: {:.4f};".format(d_l)
+                    str2 = "Mel Loss: {:.4f}, Mel PostNet Loss: {:.4f}, Gate Loss: {:.4f};".format(
+                        m_l, m_p_l, g_l)
                     str3 = "Current Learning Rate is {:.6f}."\
                         .format(scheduled_optim.get_learning_rate())
                     str4 = "Time Used: {:.3f}s, Estimated Time Remaining: {:.3f}s."\
