@@ -112,3 +112,4 @@ data/train.txt
 
 mels
 waveglow/pretrained_model
+logger
