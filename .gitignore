@@ -114,3 +114,5 @@ mels
 waveglow/pretrained_model
 logger
 model_new
+results
+*.patch
