@@ -19,7 +19,7 @@ def build_from_path(in_dir, out_dir):
             futures.append(_process_utterance(out_dir, index, wav_path, text))
 
             if index % 100 == 0:
-                print("Done %d" % index)
+                print("%d Done" % index)
             index = index + 1
 
     return futures
