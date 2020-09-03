@@ -7,23 +7,6 @@ text_cleaners = ['english_cleaners']
 
 
 # Model
-# vocab_size = 300
-# max_seq_len = 3000
-
-# encoder_dim = 512
-# encoder_num_conv = 3
-# encoder_num_gru_layer = 1
-
-# decoder_dim = 270
-# decoder_head = 3
-# decoder_n_layer = 4
-# decoder_cb_num_conv = 3
-# decoder_kernel_size = 3
-
-# duration_predictor_filter_size = 256
-# duration_predictor_kernel_size = 3
-
-# n_frame_per_step = 3
 dropout = 0.1
 
 n_symbols = len(symbols)
