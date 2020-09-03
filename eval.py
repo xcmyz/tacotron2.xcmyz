@@ -20,24 +20,21 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 def get_DNN(num):
     checkpoint_path = "checkpoint_" + str(num) + ".pth.tar"
-    model = nn.DataParallel(M.ConvSpeech()).to(device)
+    model = nn.DataParallel(M.Tacotron2(hp)).to(device)
     model.load_state_dict(torch.load(os.path.join(hp.checkpoint_path,
                                                   checkpoint_path))['model'])
     model.eval()
     return model
 
 
-def synthesis(model, text, alpha=1.0):
+def synthesis(model, text):
     text = np.array(phn)
     text = np.stack([text])
-    src_pos = np.array([i+1 for i in range(text.shape[1])])
-    src_pos = np.stack([src_pos])
     sequence = torch.from_numpy(text).cuda().long()
-    src_pos = torch.from_numpy(src_pos).cuda().long()
 
     with torch.no_grad():
-        mel, scores = model.module.forward(sequence, src_pos, alpha=alpha)
-    return mel[0].cpu().transpose(0, 1), mel.contiguous().transpose(1, 2), scores
+        _, mel, _, _ = model.module.inference(sequence)
+    return mel[0].cpu(), mel.contiguous()
 
 
 def get_data():
@@ -62,14 +59,13 @@ if __name__ == "__main__":
     WaveGlow = utils.get_WaveGlow()
     parser = argparse.ArgumentParser()
     parser.add_argument('--step', type=int, default=0)
-    parser.add_argument("--alpha", type=float, default=1.0)
     args = parser.parse_args()
 
     print("use griffin-lim and waveglow")
     model = get_DNN(args.step)
     data_list = get_data()
     for i, phn in enumerate(data_list):
-        mel, mel_cuda, _ = synthesis(model, phn, args.alpha)
+        mel, mel_cuda = synthesis(model, phn)
         if not os.path.exists("results"):
             os.mkdir("results")
         audio.tools.inv_mel_spec(
@@ -78,14 +74,3 @@ if __name__ == "__main__":
             mel_cuda, WaveGlow,
             "results/"+str(args.step)+"_"+str(i)+"_waveglow.wav")
         print("Done", i + 1)
-
-        # os.makedirs("attention", exist_ok=True)
-        # np.save("attention/"+str(args.step)+"_"+str(i)+".npy", score.numpy())
-
-    s_t = time.perf_counter()
-    for i in range(100):
-        for _, phn in enumerate(data_list):
-            _, _, _ = synthesis(model, phn, args.alpha)
-        print(i)
-    e_t = time.perf_counter()
-    print((e_t - s_t) / 100.)
