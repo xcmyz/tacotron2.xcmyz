@@ -108,10 +108,8 @@ def main(args):
                 # gate_target[index_arr] = 1.
 
                 gate_target = mel_pos.eq(0).float()
-                print(gate_target)
                 gate_target = gate_target[:, 1:]
                 gate_target = F.pad(gate_target, (0, 1, 0, 0), value=1.)
-                print(gate_target)
 
                 # Forward
                 inputs = character, src_length, mel_target, max_mel_len, mel_length
