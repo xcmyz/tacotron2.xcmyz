@@ -101,8 +101,9 @@ def main(args):
                 src_length = torch.max(src_pos, -1)[0]
                 mel_length = torch.max(mel_pos, -1)[0]
 
-                print(gate_target)
+                # print(gate_target)
                 print(mel_length)
+                print(mel_length - 1)
                 print(mel_target.size())
 
                 # Forward
