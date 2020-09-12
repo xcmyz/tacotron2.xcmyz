@@ -107,7 +107,7 @@ def main(args):
                     [i for i in range(mel_length.size(0))]).long().to(device)
                 index_arr = torch.cat(
                     [index_arr.unsqueeze(1), (mel_length-1).unsqueeze(1)], 1)
-                index_arr = index_arr.numpy().tolist()
+                index_arr = index_arr.cpu().numpy().tolist()
                 print(index_arr)
                 gate_target[index_arr] = 1.
                 print(gate_target)
