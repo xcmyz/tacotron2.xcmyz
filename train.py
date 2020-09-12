@@ -96,10 +96,17 @@ def main(args):
                 mel_pos = db["mel_pos"].long().to(device)
                 src_pos = db["src_pos"].long().to(device)
                 max_mel_len = db["mel_max_len"]
-                gate_target = mel_pos.eq(0).float()
+
                 mel_target = mel_target.contiguous().transpose(1, 2)
                 src_length = torch.max(src_pos, -1)[0]
                 mel_length = torch.max(mel_pos, -1)[0]
+
+                gate_target = mel_pos.eq(0).float()
+                index_arr = torch.Tensor(
+                    [i for i in range(mel_length.size(0))]).float().to(device)
+                index_arr = torch.cat(
+                    [index_arr.unsqueeze(1), (mel_length-1).unsqueeze(1)], 0)
+                gate_target[index_arr] = 1.
 
                 # print(gate_target)
                 print(mel_length)
