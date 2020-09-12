@@ -96,7 +96,7 @@ def reprocess_tensor(batch, cut_list):
 def collate_fn_tensor(batch):
     len_arr = np.array([d["text"].size(0) for d in batch])
     index_arr = np.argsort(-len_arr)
-    np.random.shuffle(index_arr)
+    # np.random.shuffle(index_arr)
 
     batchsize = len(batch)
     real_batchsize = batchsize // hparams.batch_expand_size
