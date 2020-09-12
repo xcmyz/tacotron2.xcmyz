@@ -101,15 +101,16 @@ def main(args):
                 src_length = torch.max(src_pos, -1)[0]
                 mel_length = torch.max(mel_pos, -1)[0]
 
+                # gate_target = mel_pos.eq(0).float()
+                # index_arr = torch.Tensor([i for i in range(mel_length.size(0))]).long().to(device)
+                # index_arr = torch.cat([index_arr.unsqueeze(1), (mel_length-1).unsqueeze(1)], 1)
+                # index_arr = index_arr.cpu().numpy().tolist()
+                # gate_target[index_arr] = 1.
+
                 gate_target = mel_pos.eq(0).float()
                 print(gate_target)
-                index_arr = torch.Tensor(
-                    [i for i in range(mel_length.size(0))]).long().to(device)
-                index_arr = torch.cat(
-                    [index_arr.unsqueeze(1), (mel_length-1).unsqueeze(1)], 1)
-                index_arr = index_arr.cpu().numpy().tolist()
-                print(index_arr)
-                gate_target[index_arr] = 1.
+                gate_target = gate_target[:, 1:]
+                gate_target = F.pad(gate_target, (0, 1, 0, 0), value=1.)
                 print(gate_target)
 
                 # Forward
@@ -117,9 +118,9 @@ def main(args):
                 mel_output, mel_output_postnet, gate_output, _ = model(inputs)
 
                 # Cal Loss
-                mel_loss, mel_postnet_loss, gate_loss = tts_loss(
-                    mel_output, mel_output_postnet, gate_output,
-                    mel_target, gate_target)
+                mel_loss, mel_postnet_loss, gate_loss \
+                    = tts_loss(mel_output, mel_output_postnet, gate_output,
+                               mel_target, gate_target)
                 total_loss = mel_loss + mel_postnet_loss + gate_loss
 
                 # Logger
