@@ -1,19 +1,19 @@
+import os
 import torch
-from torch.nn import functional as F
-from torch.utils.data import Dataset, DataLoader
-
-import numpy as np
 import math
 import time
-import os
+import random
+import numpy as np
 
 import hparams
 import audio
 
+from tqdm import tqdm
+from text import text_to_sequence
+from torch.nn import functional as F
+from torch.utils.data import Dataset, DataLoader
 from utils import process_text, pad_1D, pad_2D
 from utils import pad_1D_tensor, pad_2D_tensor
-from text import text_to_sequence
-from tqdm import tqdm
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
@@ -96,6 +96,8 @@ def reprocess_tensor(batch, cut_list):
 def collate_fn_tensor(batch):
     len_arr = np.array([d["text"].size(0) for d in batch])
     index_arr = np.argsort(-len_arr)
+    np.random.shuffle(index_arr)
+
     batchsize = len(batch)
     real_batchsize = batchsize // hparams.batch_expand_size
 
