@@ -437,8 +437,9 @@ class Decoder(nn.Module):
             gate_outputs += [gate_output]
             alignments += [alignment]
 
+            print(torch.sigmoid(gate_output.data))
+
             if torch.sigmoid(gate_output.data) > self.gate_threshold:
-                print(torch.sigmoid(gate_output.data))
                 break
             elif len(mel_outputs) == self.max_decoder_steps:
                 print("Warning! Reached max decoder steps")
