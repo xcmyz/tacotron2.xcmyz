@@ -437,7 +437,7 @@ class Decoder(nn.Module):
             gate_outputs += [gate_output]
             alignments += [alignment]
 
-            print(torch.sigmoid(gate_output.data))
+            print(gate_output.data)
 
             if torch.sigmoid(gate_output.data) > self.gate_threshold:
                 break
