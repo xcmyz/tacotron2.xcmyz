@@ -102,16 +102,13 @@ def main(args):
                 mel_length = torch.max(mel_pos, -1)[0]
 
                 gate_target = mel_pos.eq(0).float()
+                print(gate_target)
                 index_arr = torch.Tensor(
-                    [i for i in range(mel_length.size(0))]).float().to(device)
+                    [i for i in range(mel_length.size(0))]).long().to(device)
                 index_arr = torch.cat(
                     [index_arr.unsqueeze(1), (mel_length-1).unsqueeze(1)], 0)
                 gate_target[index_arr] = 1.
-
-                # print(gate_target)
-                print(mel_length)
-                print(mel_length - 1)
-                print(mel_target.size())
+                print(gate_target)
 
                 # Forward
                 inputs = character, src_length, mel_target, max_mel_len, mel_length
