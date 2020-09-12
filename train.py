@@ -101,6 +101,9 @@ def main(args):
                 src_length = torch.max(src_pos, -1)[0]
                 mel_length = torch.max(mel_pos, -1)[0]
 
+                print(mel_length)
+                print(mel_target.size())
+
                 # Forward
                 inputs = character, src_length, mel_target, max_mel_len, mel_length
                 mel_output, mel_output_postnet, gate_output, _ = model(inputs)
