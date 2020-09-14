@@ -1,3 +1,5 @@
+""" from https://github.com/NVIDIA/tacotron2 """
+
 import torch
 
 from math import sqrt
