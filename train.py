@@ -16,6 +16,7 @@ from model import Tacotron2
 from dataset import BufferDataset, DataLoader
 from dataset import get_data_to_buffer, collate_fn_tensor
 from optimizer import ScheduledOptim
+np.seterr('raise')
 
 
 def main(args):
