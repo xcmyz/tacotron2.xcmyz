@@ -101,19 +101,13 @@ def main(args):
                 src_length = torch.max(src_pos, -1)[0]
                 mel_length = torch.max(mel_pos, -1)[0]
 
-                # gate_target = mel_pos.eq(0).float()
-                # index_arr = torch.Tensor([i for i in range(mel_length.size(0))]).long().to(device)
-                # index_arr = torch.cat([index_arr.unsqueeze(1), (mel_length-1).unsqueeze(1)], 1)
-                # index_arr = index_arr.cpu().numpy().tolist()
-                # gate_target[index_arr] = 1.
-
                 gate_target = mel_pos.eq(0).float()
                 gate_target = gate_target[:, 1:]
                 gate_target = F.pad(gate_target, (0, 1, 0, 0), value=1.)
 
                 # Forward
                 inputs = character, src_length, mel_target, max_mel_len, mel_length
-                mel_output, mel_output_postnet, gate_output, _ = model(inputs)
+                mel_output, mel_output_postnet, gate_output = model(inputs)
 
                 # Cal Loss
                 mel_loss, mel_postnet_loss, gate_loss \

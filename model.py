@@ -503,14 +503,14 @@ class Tacotron2(nn.Module):
 
         encoder_outputs = self.encoder(embedded_inputs, text_lengths)
 
-        mel_outputs, gate_outputs, alignments = self.decoder(
-            encoder_outputs, mels, memory_lengths=text_lengths)
+        mel_outputs, gate_outputs, _ \
+            = self.decoder(encoder_outputs, mels, memory_lengths=text_lengths)
 
         mel_outputs_postnet = self.postnet(mel_outputs)
         mel_outputs_postnet = mel_outputs + mel_outputs_postnet
 
         return self.parse_output(
-            [mel_outputs, mel_outputs_postnet, gate_outputs, alignments],
+            [mel_outputs, mel_outputs_postnet, gate_outputs],
             output_lengths,
             max_len=max_len)
 
