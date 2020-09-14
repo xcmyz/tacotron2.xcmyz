@@ -16,7 +16,8 @@ from model import Tacotron2
 from dataset import BufferDataset, DataLoader
 from dataset import get_data_to_buffer, collate_fn_tensor
 from optimizer import ScheduledOptim
-np.seterr('raise')
+
+# np.seterr('raise')
 
 
 def main(args):
@@ -159,7 +160,7 @@ def main(args):
                     str3 = "Current Learning Rate is {:.6f}."\
                         .format(scheduled_optim.get_learning_rate())
                     str4 = "Time Used: {:.3f}s, Estimated Time Remaining: {:.3f}s."\
-                        .format((Now-Start), (total_step-current_step)*np.mean(Time))
+                        .format((Now-Start), (total_step-current_step) * np.mean(Time, dtype=np.float32))
 
                     print("\n" + str1)
                     print(str2)
@@ -174,8 +175,10 @@ def main(args):
                         f_logger.write("\n")
 
                 if current_step % hp.save_step == 0:
-                    torch.save({'model': model.state_dict(), 'optimizer': optimizer.state_dict(
-                    )}, os.path.join(hp.checkpoint_path, 'checkpoint_%d.pth.tar' % current_step))
+                    torch.save({
+                        'model': model.state_dict(),
+                        'optimizer': optimizer.state_dict()},
+                        os.path.join(hp.checkpoint_path, 'checkpoint_%d.pth.tar' % current_step))
                     print("save model at step %d ..." % current_step)
 
                 end_time = time.perf_counter()
