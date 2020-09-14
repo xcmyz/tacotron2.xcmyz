@@ -57,6 +57,7 @@ def get_data():
 if __name__ == "__main__":
     # Test
     WaveGlow = utils.get_WaveGlow()
+    print("load waveglow")
     parser = argparse.ArgumentParser()
     parser.add_argument('--step', type=int, default=0)
     args = parser.parse_args()
