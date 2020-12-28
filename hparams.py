@@ -51,7 +51,7 @@ logger_path = "./logger"
 mel_ground_truth = "./mels"
 alignment_path = "./alignments"
 
-batch_size = 128
+batch_size = 64
 epochs = 2000
 n_warm_up_step = 4000
 
@@ -60,7 +60,7 @@ weight_decay = 1e-6
 grad_clip_thresh = 1.0
 decay_step = [500000, 1000000, 2000000]
 
-save_step = 3000
+save_step = 5000
 log_step = 5
 clear_Time = 20
 
