@@ -21,18 +21,20 @@ def get_model(checkpoint_path="tacotron2_statedict.pt"):
 
 
 def generator(model):
+    os.makedirs("gta", exist_ok=True)
     with torch.no_grad():
         text = process_text(os.path.join("data", "train.txt"))
         start = time.perf_counter()
         for i in tqdm(range(len(text))):
-            mel_gt_name = os.path.join(hparams.mel_ground_truth, "ljspeech-mel-%05d.npy" % (i+1))
+            mel_gt_name = os.path.join(hparams.mel_ground_truth, "ljspeech-mel-%05d.npy" % (i + 1))
             mel_gt_target = np.load(mel_gt_name)
             character = text[i][0:len(text[i])-1]
             character = np.array(text_to_sequence(character, hparams.text_cleaners))
             character = torch.stack([torch.from_numpy(character)]).long().to(device)
+            length = torch.Tensor([character.size(1)]).long().to(device)
             mel_gt_target = torch.stack([torch.from_numpy(mel_gt_target.T)]).float().to(device)
-            mel_gta = model.gta(character, mel_gt_target)
-            print(mel_gt_target.size(), mel_gta.size())
+            mel_gta = model.gta(character, mel_gt_target, length)
+            np.save(os.path.join("gta", "ljspeech-mel-%05d.npy" % (i + 1)), mel_gta.cpu()[0].numpy())
 
         end = time.perf_counter()
         print("cost {:.2f}s to generate gta data.".format(end - start))
