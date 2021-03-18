@@ -527,3 +527,13 @@ class Tacotron2(nn.Module):
             [mel_outputs, mel_outputs_postnet, gate_outputs, alignments])
 
         return outputs
+
+    def gta(self, inputs, mels):
+        embedded_inputs = self.embedding(inputs).transpose(1, 2)
+        encoder_outputs = self.encoder.inference(embedded_inputs)
+        mel_outputs, _, _ = self.decoder(encoder_outputs, mels, memory_lengths=None)
+
+        mel_outputs_postnet = self.postnet(mel_outputs)
+        mel_outputs_postnet = mel_outputs + mel_outputs_postnet
+
+        return mel_outputs_postnet
