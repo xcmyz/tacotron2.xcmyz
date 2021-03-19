@@ -20,9 +20,14 @@ if __name__ == "__main__":
     # Test
     model = get_model()
 
-    words = "All work and no play makes Jack a dull boy is a proverb. It means that without time off from work, a person becomes both bored and boring."
-    sequence = np.array(text.text_to_sequence(words, ['english_cleaners']))[None, :]
-    sequence = torch.autograd.Variable(torch.from_numpy(sequence)).cuda().long()
-    with torch.no_grad():
-        mel_outputs, mel_outputs_postnet, _, _ = model.inference(sequence)
-    np.save("result.npy", mel_outputs_postnet.cpu()[0].numpy())
+    words = [
+        "All work and no play makes Jack a dull boy is a proverb. It means that without time off from work, a person becomes both bored and boring.",
+        "Steven Paul Jobs was an American business magnate, industrial designer, investor, and media proprietor.",
+        "As Jobs became more successful with his new company, his relationship with Brennan grew more complex."
+    ]
+    for i, word in enumerate(words):
+        sequence = np.array(text.text_to_sequence(word, ['english_cleaners']))[None, :]
+        sequence = torch.autograd.Variable(torch.from_numpy(sequence)).cuda().long()
+        with torch.no_grad():
+            mel_outputs, mel_outputs_postnet, _, _ = model.inference(sequence)
+        np.save(f"result{i}.npy", mel_outputs_postnet.cpu()[0].numpy())
