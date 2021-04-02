@@ -5,6 +5,7 @@ import text
 import hparams
 
 from model import Tacotron2
+from audio.tools import inv_mel_spec
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
@@ -31,3 +32,4 @@ if __name__ == "__main__":
         with torch.no_grad():
             mel_outputs, mel_outputs_postnet, _, _ = model.inference(sequence)
         np.save(f"result{i}.npy", mel_outputs_postnet.cpu()[0].numpy())
+        inv_mel_spec(mel_outputs_postnet.cpu()[0], f"{i}.wav")
